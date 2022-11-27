@@ -1,5 +1,5 @@
-// 3.4: puhelinluettelon backend step 4
-// Puhelinnumeron poistaminen ja testaus
+// 3.5: puhelinluettelon backend step 5
+// Puhelinnumeron testaaminen
 
 const { response } = require('express')
 const express = require('express')
@@ -38,7 +38,7 @@ app.get('/api/persons', (req, res) => {
     res.json(persons)
 })
 
-app.get('/info', (req, res) => { 
+app.get('/info', (req, res) => {
     res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${Date()}</p>`)
 })
 
@@ -48,7 +48,7 @@ app.get('/api/persons/:id', (req, res) => {
         return person.id === id
     })
 
-    if (person){
+    if (person) {
         // lähettää HTTP-pyynnön vastaukseksi parametrina olevaa JavaScript-olioa eli taulukkoa notes vastaavan JSON-muotoisen merkkijonon.
         res.json(person)
     } else {
@@ -61,6 +61,38 @@ app.delete('/api/persons/:id', (req, res) => {
     persons = persons.filter(person => person.id !== id)
 
     res.status(204).end()
+})
+
+const generateId = () => {
+    const maxId = persons.length > 0 ? Math.max(...persons.map(p => p.id)) : 0
+    return maxId + 1
+}
+
+
+app.post('/api/persons/', (req, res) => {
+    const body = req.body
+
+    if (!body.name) {
+        return res.status(400).json({
+            error: 'name missing'
+        })
+    }
+
+    if (!body.number) {
+        return res.status(400).json({
+            error: 'number missing'
+        })
+    }
+
+    const person = {
+        name: body.name,
+        number: body.number,
+        id: generateId(),
+    }
+
+    persons = persons.concat(person)
+
+    res.json(person)
 })
 
 const PORT = 3001
