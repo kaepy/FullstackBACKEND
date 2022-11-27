@@ -1,5 +1,5 @@
-// 3.3: puhelinluettelon backend step 3
-// Yksittäisen puhelinnumeron näyttäminen
+// 3.4: puhelinluettelon backend step 4
+// Puhelinnumeron poistaminen ja testaus
 
 const { response } = require('express')
 const express = require('express')
@@ -54,6 +54,13 @@ app.get('/api/persons/:id', (req, res) => {
     } else {
         res.status(404).end()
     }
+})
+
+app.delete('/api/persons/:id', (req, res) => {
+    const id = Number(req.params.id)
+    persons = persons.filter(person => person.id !== id)
+
+    res.status(204).end()
 })
 
 const PORT = 3001
