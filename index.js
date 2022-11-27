@@ -1,11 +1,13 @@
-// 3.6: puhelinluettelon backend step 6
-// Puhelinnumeron lisäämisen virheenkäsittely
+// 3.7: puhelinluettelon backend step 7
+// Lisätään middleware morgan tekemään loggausta konsoliin
 
 const { response } = require('express')
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 
 app.use(express.json())
+app.use(morgan('tiny'))
 
 let persons = [
     {
