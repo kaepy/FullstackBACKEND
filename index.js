@@ -1,5 +1,5 @@
-// 3.7: puhelinluettelon backend step 7
-// Lisätään middleware morgan tekemään loggausta konsoliin
+// 3.8*: puhelinluettelon backend step 8
+// Lisätään HTTP POST-pyynnön data konsolin logiin
 
 const { response } = require('express')
 const express = require('express')
@@ -7,7 +7,11 @@ const morgan = require('morgan')
 const app = express()
 
 app.use(express.json())
-app.use(morgan('tiny'))
+// app.use(morgan('tiny'))
+
+// muuttujassa req.body oleva "data" muutetaan JSON-muotoon
+morgan.token('body', (req, res) => JSON.stringify(req.body));
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 
 let persons = [
     {
@@ -86,7 +90,7 @@ app.post('/api/persons/', (req, res) => {
         })
     }
 
-    if (persons.some(person => person.name === body.name)){
+    if (persons.some(person => person.name === body.name)) {
         return res.status(409).json({
             error: 'name must be unique'
         })
