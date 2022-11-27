@@ -1,5 +1,5 @@
-// 3.5: puhelinluettelon backend step 5
-// Puhelinnumeron testaaminen
+// 3.6: puhelinluettelon backend step 6
+// Puhelinnumeron lisäämisen virheenkäsittely
 
 const { response } = require('express')
 const express = require('express')
@@ -81,6 +81,12 @@ app.post('/api/persons/', (req, res) => {
     if (!body.number) {
         return res.status(400).json({
             error: 'number missing'
+        })
+    }
+
+    if (persons.some(person => person.name === body.name)){
+        return res.status(409).json({
+            error: 'name must be unique'
         })
     }
 
