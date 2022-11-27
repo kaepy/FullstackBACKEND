@@ -1,5 +1,9 @@
+// 3.2: puhelinluettelon backend step2
+
 const express = require('express')
 const app = express()
+
+app.use(express.json())
 
 let persons = [
     {
@@ -30,6 +34,10 @@ app.get('/', (req, res) => {
 
 app.get('/api/persons', (req, res) => {
     res.json(persons)
+})
+
+app.get('/info', (req, res) => { 
+    res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${Date()}</p>`)
 })
 
 const PORT = 3001
