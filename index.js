@@ -1,5 +1,7 @@
-// 3.2: puhelinluettelon backend step2
+// 3.3: puhelinluettelon backend step 3
+// Yksittäisen puhelinnumeron näyttäminen
 
+const { response } = require('express')
 const express = require('express')
 const app = express()
 
@@ -38,6 +40,20 @@ app.get('/api/persons', (req, res) => {
 
 app.get('/info', (req, res) => { 
     res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${Date()}</p>`)
+})
+
+app.get('/api/persons/:id', (req, res) => {
+    const id = Number(req.params.id)
+    const person = persons.find(person => {
+        return person.id === id
+    })
+
+    if (person){
+        // lähettää HTTP-pyynnön vastaukseksi parametrina olevaa JavaScript-olioa eli taulukkoa notes vastaavan JSON-muotoisen merkkijonon.
+        res.json(person)
+    } else {
+        res.status(404).end()
+    }
 })
 
 const PORT = 3001
