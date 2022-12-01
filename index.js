@@ -1,5 +1,5 @@
-// 3.8*: puhelinluettelon backend step 8
-// Lisätään HTTP POST-pyynnön data konsolin logiin
+// 3.10: puhelinluettelon backend step 10
+// Backend Herokuun
 
 const { response } = require('express')
 const express = require('express')
@@ -110,7 +110,7 @@ app.post('/api/persons/', (req, res) => {
     res.json(person)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+  console.log(`Server running on port ${PORT}`)
 })
