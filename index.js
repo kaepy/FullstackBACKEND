@@ -1,5 +1,5 @@
-// 3.20*: puhelinluettelo ja tietokanta step 8
-// Puhelinnumeron validointi custom validaattorilla
+// 3.21: tietokantaa käyttävä versio Internetiin
+// Varmista että kaikki toimii lokaalisti ja Herokussa
 
 require('dotenv').config()
 const { response, request } = require('express')
