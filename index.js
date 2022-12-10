@@ -1,5 +1,6 @@
-// 3.17*: puhelinluettelo ja tietokanta step 5
-// Tietokannassa olevan tiedon muuttaminen
+// 3.18*: puhelinluettelo ja tietokanta step 6
+// Yksittäisen tiedon näyttäminen (korjattu jo 3.16) ja info sivun korjaus
+// Rest requestit toimimaan tietokannan kanssa
 
 require('dotenv').config()
 const { response, request } = require('express')
@@ -107,7 +108,9 @@ app.put('/api/persons/:id', (request, response, next) => {
 
 // Info sivu
 app.get('/info', (request, response) => {
-    response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${Date()}</p>`)
+    Person.find({}).then(persons => {
+        response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${Date()}</p>`)
+    })
 })
 
 const errorHandler = (error, request, response, next) => {
