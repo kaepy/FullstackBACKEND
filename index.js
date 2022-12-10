@@ -1,8 +1,8 @@
-// 3.16: puhelinluettelo ja tietokanta step 4
-// Virheidenkäsittely middlewareen
+// 3.17*: puhelinluettelo ja tietokanta step 5
+// Tietokannassa olevan tiedon muuttaminen
 
 require('dotenv').config()
-const { response } = require('express')
+const { response, request } = require('express')
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
@@ -40,9 +40,7 @@ const generateId = () => {
 
 // Tiedon lisääminen
 app.post('/api/persons/', (request, response) => {
-    //const body = request.body
-    //const name = body.name
-    //const number = body.number
+
     const { name, number } = request.body
 
     if (name === undefined) {
@@ -86,6 +84,23 @@ app.delete('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndRemove(request.params.id)
         .then(result => {
             response.status(204).end()
+        })
+        .catch(error => next(error))
+})
+
+// Tietojen muuttaminen
+app.put('/api/persons/:id', (request, response, next) => {
+    const body = request.body
+
+    const person = {
+        name: body.name,
+        number: body.number,
+    }
+
+    // findByIdAndUpdate parametrina tulee antaa normaali JavaScript-olio eikä uuden olion luomisessa käytettävä Note-konstruktorifunktiolla luotua oliota
+    Person.findByIdAndUpdate(request.params.id, person, {new: true})
+        .then(updatePerson => {
+            response.json(updatePerson)
         })
         .catch(error => next(error))
 })
