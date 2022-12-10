@@ -1,6 +1,5 @@
-// 3.19: puhelinluettelo ja tietokanta step 7
-// Lisätään nimeen pituus validointi
-// Näytetään frontendissä virheilmoitus jos nimi liian lyhyt
+// 3.20*: puhelinluettelo ja tietokanta step 8
+// Puhelinnumeron validointi custom validaattorilla
 
 require('dotenv').config()
 const { response, request } = require('express')
