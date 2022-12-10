@@ -1,5 +1,5 @@
-// 3.14: puhelinluettelo ja tietokanta step 2
-// Tietojen tallentaminen tietokantaan
+// 3.15: puhelinluettelo ja tietokanta step 3
+// Tietojen poistaminen tietokannasta
 
 require('dotenv').config()
 const { response } = require('express')
@@ -110,11 +110,12 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 // Tiedon poistaminen
-app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id)
-    persons = persons.filter(person => person.id !== id)
-
-    response.status(204).end()
+app.delete('/api/persons/:id', (request, response, next) => {
+    Person.findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 // Info sivu
