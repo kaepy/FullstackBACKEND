@@ -1,11 +1,13 @@
 // 3.10: puhelinluettelon backend step 10
 // Backend Herokuun
 
+require('dotenv').config()
 const { response } = require('express')
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
 const cors = require('cors')
+const Person = require('./models/person')
 
 app.use(express.json())
 app.use(express.static('build'))
@@ -17,6 +19,7 @@ app.use(cors())
 morgan.token('body', (req, res) => JSON.stringify(req.body));
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 
+/*
 let persons = [
     {
         name: "Arto Hellas",
@@ -39,63 +42,73 @@ let persons = [
         id: 4
     }
 ]
+*/
 
+/*
 app.get('/', (req, res) => {
     res.send('<h1>Hello Person!</h1>')
 })
+*/
 
-app.get('/api/persons', (req, res) => {
-    res.json(persons)
+// Näytä kaikki tiedot
+app.get('/api/persons', (request, response) => {
+    Person.find({}).then(persons => {
+        response.json(persons)
+      })
 })
 
-app.get('/info', (req, res) => {
-    res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${Date()}</p>`)
+// Info sivu
+app.get('/info', (request, response) => {
+    response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${Date()}</p>`)
 })
 
-app.get('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
+// Yksittäisen tiedon näyttäminen
+app.get('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
     const person = persons.find(person => {
         return person.id === id
     })
 
     if (person) {
         // lähettää HTTP-pyynnön vastaukseksi parametrina olevaa JavaScript-olioa eli taulukkoa notes vastaavan JSON-muotoisen merkkijonon.
-        res.json(person)
+        response.json(person)
     } else {
-        res.status(404).end()
+        response.status(404).end()
     }
 })
 
-app.delete('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
+// Tiedon poistaminen
+app.delete('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id)
     persons = persons.filter(person => person.id !== id)
 
-    res.status(204).end()
+    response.status(204).end()
 })
 
+// ID:n luonti
 const generateId = () => {
     const maxId = persons.length > 0 ? Math.max(...persons.map(p => p.id)) : 0
     return maxId + 1
 }
 
-
-app.post('/api/persons/', (req, res) => {
-    const body = req.body
+// Tiedon lisääminen
+app.post('/api/persons/', (request, response) => {
+    const body = request.body
 
     if (!body.name) {
-        return res.status(400).json({
+        return response.status(400).json({
             error: 'name missing'
         })
     }
 
     if (!body.number) {
-        return res.status(400).json({
+        return response.status(400).json({
             error: 'number missing'
         })
     }
 
     if (persons.some(person => person.name === body.name)) {
-        return res.status(409).json({
+        return response.status(409).json({
             error: 'name must be unique'
         })
     }
@@ -108,7 +121,7 @@ app.post('/api/persons/', (req, res) => {
 
     persons = persons.concat(person)
 
-    res.json(person)
+    response.json(person)
 })
 
 const PORT = process.env.PORT || 3001

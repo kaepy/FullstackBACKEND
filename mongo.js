@@ -22,6 +22,8 @@ const personSchema = new mongoose.Schema({
     number: String,
 })
 
+// Jos määrittelet modelin nimeksi Person, muuttaa Mongoose sen monikkomuotoon people, jota se käyttää vastaavan kokoelman nimenä.
+// merkkijono Person määrittelee, että Mongoose tallettaa muistiinpanoa vastaavat oliot kokoelmaan nimeltään people, sillä Mongoosen konventiona on määritellä kokoelmien nimet monikossa (esim. people), kun niihin viitataan skeeman määrittelyssä yksikkömuodossa (esim. Person).
 const Person = mongoose.model('Person', personSchema)
 
 const printPhonebook = () => {
