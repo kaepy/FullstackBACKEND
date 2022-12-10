@@ -1,6 +1,6 @@
-// 3.18*: puhelinluettelo ja tietokanta step 6
-// Yksittäisen tiedon näyttäminen (korjattu jo 3.16) ja info sivun korjaus
-// Rest requestit toimimaan tietokannan kanssa
+// 3.19: puhelinluettelo ja tietokanta step 7
+// Lisätään nimeen pituus validointi
+// Näytetään frontendissä virheilmoitus jos nimi liian lyhyt
 
 require('dotenv').config()
 const { response, request } = require('express')
@@ -27,9 +27,9 @@ app.get('/', (req, res) => {
 
 // Näytä kaikki tiedot
 app.get('/api/persons', (request, response) => {
-    Person.find({}).then(persons => {
-        response.json(persons)
-    })
+  Person.find({}).then(persons => {
+    response.json(persons)
+  })
 })
 
 /*
@@ -40,92 +40,80 @@ const generateId = () => {
 }*/
 
 // Tiedon lisääminen
-app.post('/api/persons/', (request, response) => {
+app.post('/api/persons/', (request, response, next) => {
+  const body = request.body
 
-    const { name, number } = request.body
+  const person = new Person({
+    name: body.name,
+    number: body.number,
+  })
 
-    if (name === undefined) {
-        return response.status(400).json({ error: 'name missing' })
-    }
-
-    if (number === undefined) {
-        return response.status(400).json({ error: 'number missing' })
-    }
-
-    /*
-    if (persons.some(person => person.name === body.name)) {
-        return response.status(409).json({
-            error: 'name must be unique'
-        })
-    }
-    */
-
-    const person = new Person({ name, number })
-
-    person.save().then(savedPerson => {
-        response.json(savedPerson)
-    })
+  person.save()
+    .then(savedPerson => { response.json(savedPerson) })
+    .catch(error => next(error))
 })
 
 // Yksittäisen tiedon näyttäminen
 app.get('/api/persons/:id', (request, response, next) => {
-    Person.findById(request.params.id)
-        .then(person => {
-            if (person) {
-                response.json(person)
-            } else {
-                response.status(404).end()
-            }
-        })
-        .catch(error => next(error))
+  Person.findById(request.params.id)
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => { next(error) })
 })
 
 // Tiedon poistaminen
 app.delete('/api/persons/:id', (request, response, next) => {
-    Person.findByIdAndRemove(request.params.id)
-        .then(result => {
-            response.status(204).end()
-        })
-        .catch(error => next(error))
+  Person.findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 // Tietojen muuttaminen
 app.put('/api/persons/:id', (request, response, next) => {
-    const body = request.body
+  const body = request.body
 
-    const person = {
-        name: body.name,
-        number: body.number,
-    }
+  const person = {
+    name: body.name,
+    number: body.number,
+  }
 
-    // findByIdAndUpdate parametrina tulee antaa normaali JavaScript-olio eikä uuden olion luomisessa käytettävä Note-konstruktorifunktiolla luotua oliota
-    Person.findByIdAndUpdate(request.params.id, person, {new: true})
-        .then(updatePerson => {
-            response.json(updatePerson)
-        })
-        .catch(error => next(error))
+  // findByIdAndUpdate parametrina tulee antaa normaali JavaScript-olio eikä uuden olion luomisessa käytettävä Note-konstruktorifunktiolla luotua oliota
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then(updatePerson => {
+      response.json(updatePerson)
+    })
+    .catch(error => next(error))
 })
 
 // Info sivu
 app.get('/info', (request, response) => {
-    Person.find({}).then(persons => {
-        response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${Date()}</p>`)
-    })
+  Person.find({}).then(persons => {
+    response.send(`<p>Phonebook has info for ${persons.length} people</p><p>${Date()}</p>`)
+  })
 })
 
 const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
-  
-    if (error.name === 'CastError') {
-      return response.status(400).send({ error: 'malformatted id' })
-    }
-  
-    next(error)
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
+
+  next(error)
+}
 
 app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+  console.log(`Server running on port ${PORT}`)
 })
