@@ -1,14 +1,14 @@
 const mongoose = require('mongoose')
 
 // Mongoose: the `strictQuery` option will be switched back to `false` by default in Mongoose 7
-mongoose.set('strictQuery', false);
+mongoose.set('strictQuery', false)
 
 const url = process.env.MONGODB_URI
 
 console.log('connecting to', url)
 
 mongoose.connect(url)
-  .then(result => {
+  .then(() => {
     console.log('connected to MongoDB')
   })
   .catch((error) => {
@@ -25,7 +25,7 @@ const personSchema = new mongoose.Schema({
     minlength: 8,
     validate: {
       validator: function(validoitavaObjekti) {
-        return /\d{2,3}-\d{7,}/.test(validoitavaObjekti);
+        return /\d{2,3}-\d{7,}/.test(validoitavaObjekti)
       },
       message: props => `${props.value} is not a valid phone number!`
     }

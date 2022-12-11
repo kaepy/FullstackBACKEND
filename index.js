@@ -2,7 +2,6 @@
 // Varmista että kaikki toimii lokaalisti ja Herokussa
 
 require('dotenv').config()
-const { response, request } = require('express')
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
@@ -15,8 +14,8 @@ app.use(cors())
 
 // muuttujassa req.body oleva "data" muutetaan JSON-muotoon
 // app.use(morgan('tiny'))
-morgan.token('body', (req, res) => JSON.stringify(req.body));
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
+morgan.token('body', request => JSON.stringify(request.body))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 /*
 app.get('/', (req, res) => {
@@ -32,7 +31,7 @@ app.get('/api/persons', (request, response) => {
 })
 
 /*
-// ID:n luonti 
+// ID:n luonti
 const generateId = () => {
     const maxId = persons.length > 0 ? Math.max(...persons.map(p => p.id)) : 0
     return maxId + 1
@@ -68,7 +67,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 // Tiedon poistaminen
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
